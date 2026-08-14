@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Triangle Analyzer | trianglesbyk</title>
+    <meta name="description"
+          content="Triangle Analyzer by Ketan. Analyze triangle sides, determine its type, calculate area, perimeter and angles.">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(circle at top left, #243b55, transparent 40%),
+                radial-gradient(circle at bottom right, #141e30, transparent 45%),
+                #0b1020;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 25px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 8px;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            color: #aeb8cc;
+            font-size: 1rem;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+        }
+
+        .inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #c9d2e5;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(0,0,0,0.25);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #6ea8ff;
+            box-shadow: 0 0 0 3px rgba(110,168,255,0.15);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #4f8cff, #7c5cff);
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            opacity: 0.92;
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            display: none;
+            margin-top: 15px;
+            padding: 13px;
+            border-radius: 10px;
+            background: rgba(255, 70, 70, 0.15);
+            border: 1px solid rgba(255, 70, 70, 0.3);
+            color: #ff9c9c;
+        }
+
+        .result {
+            display: none;
+            margin-top: 25px;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .type {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #78aaff;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .stat {
+            background: rgba(0,0,0,0.18);
+            padding: 16px;
+            border-radius: 14px;
+        }
+
+        .stat span {
+            display: block;
+            color: #9da9be;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .stat strong {
+            font-size: 1.15rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #737e92;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            .inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>△ Triangle Analyzer</h1>
+        <p>Analyze a triangle using its three side lengths.</p>
+    </div>
+
+    <div class="card">
+
+        <div class="inputs">
+
+            <div class="input-group">
+                <label for="sideA">Side A</label>
+                <input id="sideA" type="number" min="0" step="any"
+                       placeholder="Enter A">
+            </div>
+
+            <div class="input-group">
+                <label for="sideB">Side B</label>
+                <input id="sideB" type="number" min="0" step="any"
+                       placeholder="Enter B">
+            </div>
+
+            <div class="input-group">
+                <label for="sideC">Side C</label>
+                <input id="sideC" type="number" min="0" step="any"
+                       placeholder="Enter C">
+            </div>
+
+        </div>
+
+        <button onclick="analyzeTriangle()">
+            Analyze Triangle
+        </button>
+
+        <div id="error" class="error"></div>
+
+        <div id="result" class="result">
+
+            <div class="result-title">
+                Analysis Result
+            </div>
+
+            <div id="triangleType" class="type"></div>
+
+            <div class="stats">
+
+                <div class="stat">
+                    <span>Side Classification</span>
+                    <strong id="sideType">-</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Angle Classification</span>
+                    <strong id="angleType">-</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Perimeter</span>
+                    <strong id="perimeter">-</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Area</span>
+                    <strong id="area">-</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Angle A</span>
+                    <strong id="angleA">-</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Angle B</span>
+                    <strong id="angleB">-</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Angle C</span>
+                    <strong id="angleC">-</strong>
+                </div>
+
+                <div class="stat">
+                    <span>Sum of Angles</span>
+                    <strong>180°</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        trianglesbyk • Triangle Analyzer
+    </div>
+
+</div>
+
+<script>
+
+function analyzeTriangle() {
+
+    const a = Number(document.getElementById("sideA").value);
+    const b = Number(document.getElementById("sideB").value);
+    const c = Number(document.getElementById("sideC").value);
+
+    const error = document.getElementById("error");
+    const result = document.getElementById("result");
+
+    error.style.display = "none";
+    result.style.display = "none";
+
+    // Validate input
+    if (!a || !b || !c || a <= 0 || b <= 0 || c <= 0) {
+        showError("Please enter three positive side lengths.");
+        return;
+    }
+
+    // Triangle inequality theorem
+    if (a + b <= c || a + c <= b || b + c <= a) {
+        showError(
+            "These sides cannot form a triangle. " +
+            "The sum of any two sides must be greater than the third."
+        );
+        return;
+    }
+
+    // Side classification
+    let sideType;
+
+    if (a === b && b === c) {
+        sideType = "Equilateral";
+    }
+    else if (a === b || b === c || a === c) {
+        sideType = "Isosceles";
+    }
+    else {
+        sideType = "Scalene";
+    }
+
+    // Perimeter
+    const perimeter = a + b + c;
+
+    // Heron's formula
+    const s = perimeter / 2;
+    const area = Math.sqrt(
+        s * (s - a) * (s - b) * (s - c)
+    );
+
+    // Angles using cosine rule
+    const angleA = Math.acos(
+        (b*b + c*c - a*a) / (2*b*c)
+    ) * 180 / Math.PI;
+
+    const angleB = Math.acos(
+        (a*a + c*c - b*b) / (2*a*c)
+    ) * 180 / Math.PI;
+
+    const angleC = 180 - angleA - angleB;
+
+    // Angle classification
+    const largestSquared = Math.max(
+        a*a,
+        b*b,
+        c*c
+    );
+
+    const otherSquared =
+        a*a + b*b + c*c - largestSquared;
+
+    let angleType;
+
+    if (Math.abs(largestSquared - otherSquared) < 1e-10) {
+        angleType = "Right";
+    }
+    else if (largestSquared < otherSquared) {
+        angleType = "Acute";
+    }
+    else {
+        angleType = "Obtuse";
+    }
+
+    // Display
+    document.getElementById("triangleType").textContent =
+        sideType + " Triangle";
+
+    document.getElementById("sideType").textContent =
+        sideType;
+
+    document.getElementById("angleType").textContent =
+        angleType;
+
+    document.getElementById("perimeter").textContent =
+        perimeter.toFixed(2);
+
+    document.getElementById("area").textContent =
+        area.toFixed(2);
+
+    document.getElementById("angleA").textContent =
+        angleA.toFixed(2) + "°";
+
+    document.getElementById("angleB").textContent =
+        angleB.toFixed(2) + "°";
+
+    document.getElementById("angleC").textContent =
+        angleC.toFixed(2) + "°";
+
+    result.style.display = "block";
+}
+
+
+function showError(message) {
+
+    const error = document.getElementById("error");
+
+    error.textContent = message;
+    error.style.display = "block";
+}
+
+
+// Press Enter to analyze
+document.addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+        analyzeTriangle();
+    }
+
+});
+
+</script>
+
+</body>
+</html>
